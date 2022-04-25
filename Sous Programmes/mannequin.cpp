@@ -372,7 +372,7 @@ int main(int argc, char* argv[])
         if (compteur == 25) {
             indice = 0;
         }
-*///Vagues de la planète
+*///Vagues de la planÃ¨te
         /*if (indice < 89.0f) {
             tomber(socle);
         };
