@@ -1,1 +1,19 @@
 Dossier principal avec le programme
+
+Tâches :
+  placement des objets, lumières et cibles dans la map --- Khévin
+  modèle des murs --- Khévin
+  (modèle personnage(s))
+  modèle arme
+  modèle cible --- Maxime --- Premier jet effectue
+  textures des objets, murs
+  gestion des interfaces
+  simulation de la position des objets
+  simulation du déplacement
+  simulation des arcs de tir
+  simulation chute cibles --- Maxime --- Premier jet effectue
+  rendu des objets avec lumière --- Nathan
+
+  * Physicalité
+  * Ombres portées
+  ** Split Screen
