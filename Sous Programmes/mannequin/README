@@ -1,3 +1,11 @@
 Fichier avec une implementation simple de mannequins/cibles qui tombent
 
 changer le nombre de mannequin, le cd pour en ajouter et leur debut de chute
+
+Pour les mannequins, j'ai crée une struct Mannequin avec tout les parametres : la forme, s'ils sont en vie, s'ils tombent, et la direction dans laquelle ils tombent
+Je les ai range dans 2 liste : Liste_Mannequin_En_Vie et Liste_Mannequin_Mort
+toute les x secondes, je prends un mannequin mort aleatoire et le met dans la liste en vie si ya pas assez de mannequin debout
+S'il est touché (actuellement, les mannequins sont touché des qu'il sont en vie), la chute passe a 1 
+La fonction Tomber affihce les mannequins de la liste En_Vie, et si la chute est entre 0 et 90 inclus, le mannequin rotate de 1° dans sa direction de chute
+si la chute = 90, il meurt (change de liste), revient a sa position initiale (rotate de -90°) et ne chute plus (chute = 0, mais ici reste a 1 parceque ils meurent instant)
+Si vous avez des questions ou des idées d'opti, hesitez pas 
