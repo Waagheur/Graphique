@@ -1,0 +1,28 @@
+struct Material {
+	GLuint TEXTUREID;
+	const float ka;
+	const float kd;
+	const float ks;
+	const float alpha;
+};
+
+struct Light {
+	const glm::vec3 pos;
+	const glm::vec3 color;
+};
+
+struct Object {
+	GLuint VBOID;
+	Geometry* shape;
+	Material* material;
+	glm::mat4 matrix;
+	Shader* shader;
+	glm::vec3 hitBox[8];
+	std::vector<Object*> children;
+};
+
+struct Zone {
+	glm::mat4 matrix;
+	glm::vec3 hitBox[8];
+	std::vector<Object*> children;
+};
