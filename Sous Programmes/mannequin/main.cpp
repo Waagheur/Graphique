@@ -179,7 +179,9 @@ int main(int argc, char* argv[])
     uint32_t legnbvertices = leg.getNbVertices();
 
     
-
+    SDL_Surface* img = IMG_Load("./Images/truc.png");
+    SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
+    SDL_FreeSurface(img);
 
 
     GLuint textureID;
