@@ -1,0 +1,77 @@
+void recursedraw(const Object &Ob, std::stack<glm::mat4> &matrices, const std::vector<Light*> &lights, const float pos[3], const float dir[2]) {
+	matrices.push(matrices.top() * Ob.matrix);
+	
+	glm::mat4 model = matrices.top();
+	glm::mat4 view = glm::lookAt(glm::vec3(pos[0], pos[1], pos[2]), 
+		glm::vec3(pos[0] + 1*sin(dir[0])*cos(dir[1]), pos[1] + 1*sin(dir[1]), pos[2] - 1*cos(dir[0])*cos(dir[1])), 
+		glm::vec3(0, 1, 0));
+	glm::mat4 projection = glm::perspective(FOV, WIDTH / (float)HEIGHT, 0.01f, 1000.0f);
+
+	glm::mat4 mvp = projection * view * model;
+	glm::mat3 invModel3x3 = inverse(glm::mat3(model));
+
+	glUseProgram(Ob.shader->getProgramID());
+	
+	GLint uTexture = glGetUniformLocation(Ob.shader->getProgramID(), "uTexture");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Ob.material->TEXTUREID);
+	glUniform1i(uTexture, 0);
+	
+    glBindBuffer(GL_ARRAY_BUFFER, Ob.VBOID);
+        
+	GLint uMVP = glGetUniformLocation(Ob.shader->getProgramID(), "uMVP");
+	GLint uModel = glGetUniformLocation(Ob.shader->getProgramID(), "uModel");
+	GLint uInvModel3x3 = glGetUniformLocation(Ob.shader->getProgramID(), "uInvModel3x3");
+	GLint ka = glGetUniformLocation(Ob.shader->getProgramID(), "ka");
+	GLint kd = glGetUniformLocation(Ob.shader->getProgramID(), "kd");
+	GLint ks = glGetUniformLocation(Ob.shader->getProgramID(), "ks");
+	GLint alpha = glGetUniformLocation(Ob.shader->getProgramID(), "alpha");
+	GLint lightPos = glGetUniformLocation(Ob.shader->getProgramID(), "lightPos");
+	GLint lightColor = glGetUniformLocation(Ob.shader->getProgramID(), "lightColor");
+	GLint cameraPos = glGetUniformLocation(Ob.shader->getProgramID(), "cameraPos");
+    GLint vPosition = glGetAttribLocation(Ob.shader->getProgramID(), "vPosition");
+	GLint vNormal = glGetAttribLocation(Ob.shader->getProgramID(), "vNormal");
+	GLint vUV = glGetAttribLocation(Ob.shader->getProgramID(), "vUV");
+	
+	glVertexAttribPointer(vPosition, 3, GL_FLOAT, 0, 0, 0);
+	glEnableVertexAttribArray(vPosition);
+			  
+	glVertexAttribPointer(vNormal, 3, GL_FLOAT, 0, 0, INDICE_TO_PTR((Ob.shape->getNbVertices() * 3) * sizeof(float)));
+	glEnableVertexAttribArray(vNormal);
+	
+	glVertexAttribPointer(vUV, 2, GL_FLOAT, 0, 0, INDICE_TO_PTR((Ob.shape->getNbVertices() * 6) * sizeof(float)));
+	glEnableVertexAttribArray(vUV);
+			
+	glUniformMatrix4fv(uMVP, 1, GL_FALSE, glm::value_ptr(mvp));
+	glUniformMatrix4fv(uModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix3fv(uInvModel3x3, 1, GL_FALSE, glm::value_ptr(invModel3x3));
+	glUniform1f(ka, Ob.material->ka);
+	glUniform1f(kd, Ob.material->kd);
+	glUniform1f(ks, Ob.material->ks);
+	glUniform1f(alpha, Ob.material->alpha);
+	glUniform3fv(cameraPos, 1, glm::value_ptr(glm::vec3(pos[0], pos[1], pos[2])));
+	glUniform3fv(lightPos, 1, glm::value_ptr(lights[0]->pos));
+	glUniform3fv(lightColor, 1, glm::value_ptr(lights[0]->color));
+			
+	glDrawArrays(GL_TRIANGLES, 0, Ob.shape->getNbVertices());
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glUseProgram(0);
+	
+	for (int i = 0; i < Ob.children.size(); i++) {
+		recursedraw(*Ob.children.at(i), matrices, lights, pos, dir);
+	}
+	
+	matrices.pop();
+}
+
+void zonedraw (const Zone &zone, std::stack<glm::mat4>& matrices, const std::vector<Light*> &lights, const float pos[3], const float dir[2]) {
+	matrices.push(matrices.top() * zone.matrix);
+	
+	for (int i = 0; i < zone.children.size(); i++) {
+		recursedraw(*zone.children.at(i), matrices, lights, pos, dir);
+	}
+	
+	matrices.pop();
+}
