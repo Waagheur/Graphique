@@ -1,0 +1,34 @@
+const Object* collide (const glm::vec3 &pos, const Object &Ob) {
+	glm::vec3 u = glm::cross(Ob.hitBox[0] - Ob.hitBox[3], Ob.hitBox[0] - Ob.hitBox[4]);
+	glm::vec3 v = glm::cross(Ob.hitBox[0] - Ob.hitBox[1], Ob.hitBox[0] - Ob.hitBox[4]);
+	glm::vec3 w = glm::cross(Ob.hitBox[0] - Ob.hitBox[1], Ob.hitBox[0] - Ob.hitBox[3]);
+	if ((dot(u, Ob.hitBox[0]) < dot(u, pos)) && (dot(u, pos) < dot(u, Ob.hitBox[1]))) {
+		if ((dot(v, Ob.hitBox[0]) < dot(v, pos)) && (dot(v, pos) < dot(v, Ob.hitBox[3]))) {
+			if ((dot(w, Ob.hitBox[0]) < dot(w, pos)) && (dot(w, pos) < dot(w, Ob.hitBox[4]))) {
+				return &Ob;
+			}
+		}
+	}
+	
+	const Object* hit;
+	for (int i = 0; i < Ob.children.size(); i++) {
+		hit = collide(pos, *Ob.children.at(i));
+		if (hit != NULL) {
+			return hit;
+		}
+	}
+	
+	return NULL;
+}
+
+const Object* zonecollide (const glm::vec3 &pos, const Zone &zone) {
+	const Object* hit;
+	for (int i = 0; i < zone.children.size(); i++) {
+		hit = collide(pos, *zone.children.at(i));
+		if (hit != NULL) {
+			return hit;
+		}
+	}
+	
+	return NULL;
+}
