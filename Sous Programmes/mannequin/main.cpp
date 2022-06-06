@@ -179,14 +179,14 @@ int main(int argc, char* argv[])
     uint32_t legnbvertices = leg.getNbVertices();
 
     
-    SDL_Surface* img = IMG_Load("./Images/truc.png");
+    SDL_Surface* img = IMG_Load("../tete.png");
     SDL_Surface* rgbImg = SDL_ConvertSurfaceFormat(img, SDL_PIXELFORMAT_RGBA32, 0);
     SDL_FreeSurface(img);
 
 
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    GLuint textureTete;
+    glGenTextures(1, &textureTete);
+    glBindTexture(GL_TEXTURE_2D, textureTete);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -252,6 +252,7 @@ int main(int argc, char* argv[])
     Objet tete;
     tete.Vboid = sphere;
     tete.shape = &head;
+    tete.material.TEXTUREID = textureTete;
 
     Objet corps;
     corps.Vboid = cube;
