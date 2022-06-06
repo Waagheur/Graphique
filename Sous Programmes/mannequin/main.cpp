@@ -269,6 +269,14 @@ int main(int argc, char* argv[])
     socle.Vboid = sphere;
     socle.shape = &head;
     socle.children.push_back(&jambe);
+    socle.hitBox.push_back(glm::vec3(-0.5,-0.2,-0.5));
+    socle.hitBox.push_back(glm::vec3(-0.5,-0.2,0.5));
+    socle.hitBox.push_back(glm::vec3(0.5,-0.2,0.5));
+    socle.hitBox.push_back(glm::vec3(0.5,-0.2,-0.5));
+    socle.hitBox.push_back(glm::vec3(0.5,3.5,-0.5));
+    socle.hitBox.push_back(glm::vec3(-0.5,3.5,0.5));
+    socle.hitBox.push_back(glm::vec3(0.5,3.5,0.5));
+    socle.hitBox.push_back(glm::vec3(0.5,3.5,-0.5));
     
     jambe.matrix = glm::rotate(jambe.matrix, glm::radians(90.0f), glm::vec3(1.0, 0.0, 0.0));
     corps.matrix = glm::rotate(corps.matrix, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
