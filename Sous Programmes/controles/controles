@@ -49,6 +49,9 @@ SDL_Event event;
 				case SDLK_d:
 					D = 0;
 					break;
+				case SDLK_ESCAPE:
+					isOpened = false;
+					break;
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
