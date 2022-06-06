@@ -1,0 +1,40 @@
+Cube cube;
+    
+	GLuint cubeBuffer;
+    glGenBuffers(1, &cubeBuffer);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, cubeBuffer);
+	
+	glBufferData(GL_ARRAY_BUFFER, (3+3+2) * cube.getNbVertices() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, cube.getNbVertices() * 3 * sizeof(float), cube.getVertices());
+    glBufferSubData(GL_ARRAY_BUFFER, cube.getNbVertices() * 3 * sizeof(float), cube.getNbVertices() * 3 * sizeof(float), cube.getNormals());
+	glBufferSubData(GL_ARRAY_BUFFER, cube.getNbVertices() * 6 * sizeof(float), cube.getNbVertices() * 2 * sizeof(float), cube.getUVs());
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	Sphere sphere(32,32);
+	
+	GLuint sphereBuffer;
+    glGenBuffers(1, &sphereBuffer);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, sphereBuffer);
+	
+	glBufferData(GL_ARRAY_BUFFER, (3+3+2) * sphere.getNbVertices() * sizeof(float), NULL, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sphere.getNbVertices() * 3 * sizeof(float), sphere.getVertices());
+    glBufferSubData(GL_ARRAY_BUFFER, sphere.getNbVertices() * 3 * sizeof(float), sphere.getNbVertices() * 3 * sizeof(float), sphere.getNormals());
+	glBufferSubData(GL_ARRAY_BUFFER, sphere.getNbVertices() * 6 * sizeof(float), sphere.getNbVertices() * 2 * sizeof(float), sphere.getUVs());
+	
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
+	Cylinder cylinder(10);
+	
+	GLuint cylinderBuffer;
+    glGenBuffers(1, &cylinderBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, cylinderBuffer);
+
+    glBufferData(GL_ARRAY_BUFFER, cylinder.getNbVertices() * (3 + 3 + 2) * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, cylinder.getNbVertices() * 3 * sizeof(float), cylinder.getVertices());
+    glBufferSubData(GL_ARRAY_BUFFER, cylinder.getNbVertices() * 3 * sizeof(float), cylinder.getNbVertices() * 3 * sizeof(float), cylinder.getNormals());
+    glBufferSubData(GL_ARRAY_BUFFER, cylinder.getNbVertices() * (3 + 3) * sizeof(float), cylinder.getNbVertices() * 2 * sizeof(float), cylinder.getUVs());
+	
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
