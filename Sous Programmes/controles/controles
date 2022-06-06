@@ -1,0 +1,79 @@
+SDL_Keycode key;
+SDL_SetRelativeMouseMode(SDL_TRUE); // Verrouille la souris dans la fenetre
+float sensibilite = 0.005; // Sensibilite verticale et horizontale de la camera
+float pos [3] = {0.0, 0.0, 5.0};
+float dir [2] = {0.3, 0.0};
+float nextpos [3] = {pos[0], pos[1], pos[2]};
+int Z = 0;
+int Q = 0;
+int S = 0;
+int D = 0;
+int clic = 0;
+
+SDL_Event event;
+		while (SDL_PollEvent(&event))
+		{
+			switch (event.type)
+			{
+			case SDL_KEYDOWN:
+				key = event.key.keysym.sym;
+				switch (key) 
+				{
+				case SDLK_z:
+					Z = 1;
+					break;
+				case SDLK_q:
+					Q = -1;
+					break;
+				case SDLK_s:
+					S = -1;
+					break;
+				case SDLK_d:
+					D = 1;
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+                key = event.key.keysym.sym;
+				switch (key) 
+				{
+				case SDLK_z:
+					Z = 0;
+					break;
+				case SDLK_q:
+					Q = 0;
+					break;
+				case SDLK_s:
+					S = 0;
+					break;
+				case SDLK_d:
+					D = 0;
+					break;
+				}
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+				if ((clic == 0) && (event.button.button == SDL_BUTTON_LEFT)) {
+					clic = 1;
+				}
+				break;
+			case SDL_MOUSEBUTTONUP:
+				if ((clic < 0) && (event.button.button == SDL_BUTTON_LEFT)) {
+					clic = clic + 1;
+				}
+				break;
+			case SDL_MOUSEMOTION:
+				dir[0] = fmodf((dir[0] + (event.motion.xrel * sensibilite)), (2*M_PI));
+				if ((dir[1] - (event.motion.yrel * sensibilite)) > (M_PI/2)) {
+					dir[1] = (M_PI/2);
+				}
+				else {
+					if ((dir[1] - (event.motion.yrel * sensibilite)) < (-M_PI/2)) {
+						dir[1] = (-M_PI/2);
+					}
+					else {
+						dir[1] = (dir[1] - (event.motion.yrel * sensibilite));
+					}
+				}
+				break;
+			}
+		}
