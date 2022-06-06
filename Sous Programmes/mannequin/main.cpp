@@ -184,6 +184,19 @@ int main(int argc, char* argv[])
 
     GLuint textureID;
     glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, rgbImg->w, rgbImg->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)rgbImg->pixels);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    SDL_FreeSurface(rgbImg);
     
 
     GLuint sphere;
@@ -346,37 +359,12 @@ int main(int argc, char* argv[])
         
         
 
-        /*
-          (0.5f, 0.0f, 0.0f, 0.0f,
-           0.0f, 0.5f, 0.0f, 0.0f,
-           0.0f, 0.0f, 0.5f, 0.0f,
-           0.0f, 0.0f, 0.0f, 1.0f)
-        */
+        
         
         glm::mat4 vp = projection * view ;
         std::stack<glm::mat4> matrices;
         matrices.push(vp);
        
-/*      if (indice == 1) {
-            earth.matrix = glm::translate(earth.matrix, glm::vec3(0, 0.1, 0));
-            compteur = compteur + 1 ;
-        }
-        if (indice == 0) {
-            earth.matrix = glm::translate(earth.matrix, glm::vec3(0, -0.1, 0));
-            compteur = compteur - 1;
-        }
-
-        if (compteur == -25) {
-            indice = 1;
-        }
-        if (compteur == 25) {
-            indice = 0;
-        }
-*///Vagues de la planète
-        /*if (indice < 89.0f) {
-            tomber(socle);
-        };
-        */
         for(int i =0;i<Liste_Mannequin_En_Vie.size();i++)
         {
             tomber(Liste_Mannequin_En_Vie[i], shader, matrices);
