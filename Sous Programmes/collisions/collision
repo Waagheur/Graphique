@@ -32,3 +32,17 @@ const Object* zonecollide (const glm::vec3 &pos, const Zone &zone) {
 	
 	return NULL;
 }
+
+bool inzone (const glm::vec3 &pos, const Zone &zone) {
+	glm::vec3 u = glm::cross(zone.hitBox[0] - zone.hitBox[3], zone.hitBox[0] - zone.hitBox[4]);
+	glm::vec3 v = glm::cross(zone.hitBox[0] - zone.hitBox[1], zone.hitBox[0] - zone.hitBox[4]);
+	glm::vec3 w = glm::cross(zone.hitBox[0] - zone.hitBox[1], zone.hitBox[0] - zone.hitBox[3]);
+	if ((dot(u, zone.hitBox[0]) < dot(u, pos)) && (dot(u, pos) < dot(u, zone.hitBox[1]))) {
+		if ((dot(v, zone.hitBox[0]) < dot(v, pos)) && (dot(v, pos) < dot(v, zone.hitBox[3]))) {
+			if ((dot(w, zone.hitBox[0]) < dot(w, pos)) && (dot(w, pos) < dot(w, zone.hitBox[4]))) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
