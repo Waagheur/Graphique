@@ -2,6 +2,6 @@ glm::vec3 raycast (float factor, float dir[2]) {
 	glm::vec3 casted = glm::vec3(
 		factor * (sin(dir[0])*cos(dir[1])),
 		factor * (sin(dir[1])),
-		factor * (-cos(dir[0])*cos(dir[1])));
+		-factor * (cos(dir[0])*cos(dir[1])));
 	return casted;
 }
