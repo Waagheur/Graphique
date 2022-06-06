@@ -1,48 +1,131 @@
-const Object* collide (const glm::vec3 &pos, const Object &Ob) {
-	glm::vec3 u = glm::cross(Ob.hitBox[0] - Ob.hitBox[3], Ob.hitBox[0] - Ob.hitBox[4]);
-	glm::vec3 v = glm::cross(Ob.hitBox[0] - Ob.hitBox[1], Ob.hitBox[0] - Ob.hitBox[4]);
-	glm::vec3 w = glm::cross(Ob.hitBox[0] - Ob.hitBox[1], Ob.hitBox[0] - Ob.hitBox[3]);
-	if ((dot(u, Ob.hitBox[0]) < dot(u, pos)) && (dot(u, pos) < dot(u, Ob.hitBox[1]))) {
-		if ((dot(v, Ob.hitBox[0]) < dot(v, pos)) && (dot(v, pos) < dot(v, Ob.hitBox[3]))) {
-			if ((dot(w, Ob.hitBox[0]) < dot(w, pos)) && (dot(w, pos) < dot(w, Ob.hitBox[4]))) {
-				return &Ob;
-			}
+const Object* collide (std::stack<glm::mat4> &matrices, const glm::vec3 &pos, const Object &Ob) {
+	matrices.push(matrices.top() * Ob.matrix);
+	glm::mat4 model = matrices.top();
+	
+	bool in = true;
+	glm::vec3 u = glm::cross(glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[3], 1.0)), glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[4], 1.0)));
+	glm::vec3 v = glm::cross(glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[1], 1.0)), glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[4], 1.0)));
+	glm::vec3 w = glm::cross(glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[1], 1.0)), glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0)) - glm::vec3(model * glm::vec4(Ob.hitBox[3], 1.0)));
+	if (dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[1], 1.0)))) {
+		if ((dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(u, pos)) && (dot(u, pos) < dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[1], 1.0))))) {
 		}
+		else {
+			in = false;
+		}
+	}
+	else {
+		if ((dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[1], 1.0))) < dot(u, pos)) && (dot(u, pos) < dot(u, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	if (dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[3], 1.0)))) {
+		if ((dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(v, pos)) && (dot(v, pos) < dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[3], 1.0))))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	else {
+		if ((dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[3], 1.0))) < dot(v, pos)) && (dot(v, pos) < dot(v, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	if (dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[4], 1.0)))) {
+		if ((dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))) < dot(w, pos)) && (dot(w, pos) < dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[4], 1.0))))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	else {
+		if ((dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[4], 1.0))) < dot(w, pos)) && (dot(w, pos) < dot(w, glm::vec3(model * glm::vec4(Ob.hitBox[0], 1.0))))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	if (in) {
+		return &Ob;
 	}
 	
 	const Object* hit;
 	for (int i = 0; i < Ob.children.size(); i++) {
-		hit = collide(pos, *Ob.children.at(i));
+		hit = collide(matrices, pos, *Ob.children.at(i));
 		if (hit != NULL) {
+			matrices.pop();
 			return hit;
 		}
 	}
 	
+	matrices.pop();
 	return NULL;
 }
 
-const Object* zonecollide (const glm::vec3 &pos, const Zone &zone) {
+const Object* zonecollide (std::stack<glm::mat4>& matrices, const glm::vec3 &pos, const Zone &zone) {
+	matrices.push(matrices.top() * zone.matrix);
+	
 	const Object* hit;
 	for (int i = 0; i < zone.children.size(); i++) {
-		hit = collide(pos, *zone.children.at(i));
+		hit = collide(matrices, pos, *zone.children.at(i));
 		if (hit != NULL) {
+			matrices.pop();
 			return hit;
 		}
 	}
-	
+	matrices.pop();
 	return NULL;
 }
 
 bool inzone (const glm::vec3 &pos, const Zone &zone) {
-	glm::vec3 u = glm::cross(zone.hitBox[0] - zone.hitBox[3], zone.hitBox[0] - zone.hitBox[4]);
-	glm::vec3 v = glm::cross(zone.hitBox[0] - zone.hitBox[1], zone.hitBox[0] - zone.hitBox[4]);
-	glm::vec3 w = glm::cross(zone.hitBox[0] - zone.hitBox[1], zone.hitBox[0] - zone.hitBox[3]);
-	if ((dot(u, zone.hitBox[0]) < dot(u, pos)) && (dot(u, pos) < dot(u, zone.hitBox[1]))) {
-		if ((dot(v, zone.hitBox[0]) < dot(v, pos)) && (dot(v, pos) < dot(v, zone.hitBox[3]))) {
-			if ((dot(w, zone.hitBox[0]) < dot(w, pos)) && (dot(w, pos) < dot(w, zone.hitBox[4]))) {
-				return true;
-			}
+	bool in = true;
+	glm::vec3 u = glm::cross(glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[3], 1.0)), glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[4], 1.0)));
+	glm::vec3 v = glm::cross(glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[1], 1.0)), glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[4], 1.0)));
+	glm::vec3 w = glm::cross(glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[1], 1.0)), glm::vec3(zone.matrix * glm::vec4(zone.hitBox[0], 1.0)) - glm::vec3(zone.matrix * glm::vec4(zone.hitBox[3], 1.0)));
+	if (dot(u, zone.hitBox[0]) < dot(u, zone.hitBox[1])) {
+		if ((dot(u, zone.hitBox[0]) < dot(u, pos)) && (dot(u, pos) < dot(u, zone.hitBox[1]))) {
+		}
+		else {
+			in = false;
 		}
 	}
-	return false;
+	else {
+		if ((dot(u, zone.hitBox[1]) < dot(u, pos)) && (dot(u, pos) < dot(u, zone.hitBox[0]))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	if (dot(v, zone.hitBox[0]) < dot(v, zone.hitBox[3])) {
+		if ((dot(v, zone.hitBox[0]) < dot(v, pos)) && (dot(v, pos) < dot(v, zone.hitBox[3]))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	else {
+		if ((dot(v, zone.hitBox[3]) < dot(v, pos)) && (dot(v, pos) < dot(v, zone.hitBox[0]))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	if (dot(w, zone.hitBox[0]) < dot(w, zone.hitBox[4])) {
+		if ((dot(w, zone.hitBox[0]) < dot(w, pos)) && (dot(w, pos) < dot(w, zone.hitBox[4]))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	else {
+		if ((dot(w, zone.hitBox[4]) < dot(w, pos)) && (dot(w, pos) < dot(w, zone.hitBox[0]))) {
+		}
+		else {
+			in = false;
+		}
+	}
+	return in;
 }
