@@ -42,6 +42,7 @@ struct Material {
 };
 
 struct Objet {
+    std::vector<glm::vec3> hitBox;
     GLuint Vboid;
     Geometry* shape;
     Material* material;
